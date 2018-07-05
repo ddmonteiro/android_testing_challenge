@@ -24,25 +24,26 @@ jobs:
     steps:
       - checkout
 
-  - restore_cache:
-      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-  - run:
-     name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-     command: sudo chmod +x ./gradlew
-  - run:
-      name: Download Dependencies
-      command: ./gradlew androidDependencies
-  - save_cache:
-      paths:
-        - ~/.gradle
-      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: gradle dependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
         
       # run tests!
       - run: gradle test
 
     test:
-      override:
-      # start the emulator
+    override:
+    # start the emulator
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
@@ -57,5 +58,16 @@ jobs:
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
     # copy the test results to the test results directory.
     - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+
+    ## Customize dependencies
+dependencies:
+  pre:
+    # workaround for "failed to find Build Tools revision xx"
+    # https://discuss.circleci.com/t/android-build-tools-23-0-2-not-available/455/3
+    - echo y | android update sdk --no-ui --all --filter platform-tools,tools,extra-android-m2repository,extra-google-m2repository,android-23
+    - echo y | android update sdk --no-ui --all --filter build-tools-23.0.3
+
+  override:
+    - sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
 
 
