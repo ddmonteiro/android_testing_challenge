@@ -1,2 +1,1 @@
-# mindera_android_testing_challenge
-Mindera Android Testing Challenge 
+#ANDROID TESTING SUPPORT LIBRARY CODELABS
