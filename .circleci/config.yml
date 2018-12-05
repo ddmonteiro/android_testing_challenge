@@ -32,7 +32,7 @@ jobs:
 
       - run:
           name: waiting for system to boot
-          command:              
+            command: |
               # wait for it to have booted
               circle-android wait-for-boot
               # unlock the emulator screen
