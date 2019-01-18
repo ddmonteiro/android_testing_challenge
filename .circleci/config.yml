@@ -28,15 +28,16 @@ jobs:
           background: true
 
       - run:
-          name: Run Tests
+          name: UnitTests
           command: ./gradlew lint test
 
-      - run:
-          name: waiting for system to boot
-          command: circle-android wait-for-boot
+      #- run:
+          #name: waiting for system to boot
+          #command: circle-android wait-for-boot
 
       - run:
-          name: Run Instrument Tests Demo
+          name: UiTests
+          command: circle-android wait-for-boot
           command:  ./gradlew connectedAndroidTest --stacktrace  
 
 
