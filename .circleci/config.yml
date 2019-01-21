@@ -10,6 +10,9 @@ jobs:
       - checkout
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          - run:
+            name: accept licenses
+            command: sdkmanager "platforms;android-27"
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
