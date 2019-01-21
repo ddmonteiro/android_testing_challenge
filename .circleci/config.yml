@@ -10,9 +10,8 @@ jobs:
       - checkout
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run: 
-          name: Accept build tools license
-          command: (echo y; echo y; echo y; echo y; echo y; echo y) | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+- run: sdkmanager --install "ndk-bundle"
+- run: sdkmanager --licenses
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
